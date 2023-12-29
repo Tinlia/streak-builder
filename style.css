@@ -1,0 +1,75 @@
+div{
+    font-family: Verdana, Geneva, Tahoma, sans-serif !important; 
+}
+#streakNumber{
+    max-width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+.buttonBar{
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+#lightDarkToggle, #clearAll{
+    padding: 8px;             
+    border-radius: 8px; 
+    border: 0px solid black;
+    text-align: center;
+    margin-left: auto;    
+    margin-right: auto;
+    margin:5px;
+    width:auto;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+.body-block {
+    background-color: #f0f0f0;
+    padding: 20px;             
+    border-radius: 8px;        
+    width: 80%;                
+    margin-left: auto;    
+    margin-right: auto;
+    text-align: center;
+    font-size: 110%;
+}
+#newStreak {
+    background-color: #a0e45f;
+    color: black;
+    border: 1px solid black;
+    border-radius: 8px;      
+    margin: auto;  
+    width: 80%;   
+    padding: 5%;             
+    text-align: center;
+    font-size: 110%;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+body {
+    min-width: 200px;
+}
+.popup-content {
+    overflow: auto; 
+    word-wrap: break-word; 
+}
+#deleteStreak,#deleteStreakCancel{
+    background-color: #e54545;
+    color: black;
+    border: 1px solid black;
+    border-radius: 8px;      
+    margin: auto;
+    width: auto;  
+    padding: 2.5%;             
+    text-align: center;
+    font-size: 100%;
+}
+#deleteStreakConfirm{
+    background-color: #a0e45f;
+    color: black;
+    border: 1px solid black;
+    border-radius: 8px;      
+    margin: auto; 
+    width: auto;  
+    padding: 2.5%;             
+    text-align: center;
+    font-size: 100%;
+}

@@ -8,15 +8,21 @@
   </head>
 
   <body>
-    <i>V 1.1</i>
+    <div style="display: flex; align-items: center;">
+      <img src="images/StreakBuilderLight.png" alt="🔥StreakBuilder" id="logo">
+      <p id="version">V1.2</p>
+    </div>
+    <br>
     <div class="popup-content">
       <div id="buttonBarID">
-        <button class="buttonBar" id="bugReport" type="button"><a href="https://github.com/Tinlia/streak-builder/issues/new">🐞</a></button>        
-        <button class="buttonBar" id="help" type="button"><a href="https://github.com/Tinlia/streak-builder">❓</a></button>
+        <button class="buttonBar" id="bugReport" type="button">🐞</button>        
+        <button class="buttonBar" id="help" type="button">❓</button>
         <button class="buttonBar" id="lightDarkToggle" type="button" value="light">🌙</button>
         <button class="buttonBar" id="clearAll" type="button">Clear All</button>
+        <!--<button class="buttonBar" id="addOne" type="button">+1</button>
+        -->
       </div>
-
+      <br>
       <div class="body-block" id="body-block">
         <!--Website name-->
         <p id="topText"></p>
@@ -25,6 +31,7 @@
         <div id="streak"></div>
       </div>
     </div>
+    <br>
     <script src="popup.js"></script>
   </body>
 </html>

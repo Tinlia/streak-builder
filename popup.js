@@ -59,7 +59,7 @@ function checkStreak(){
     console.log("Getting dates from ", dateNum ," and ", lastVisit);
     var differenceInDays = dateNum - lastVisit;
     
-    if(differenceInDays == 0){console.log("Same Day!"); streakLen += 1;} // If the same day
+    if(differenceInDays == 0){console.log("Same Day!"); streakLen += 0;} // If the same day
     else if(differenceInDays == 1){streakLen += 1;} // If one day apart
     else if(differenceInDays <= -29 && dateNum == 1){streakLen +=1;} // If new month & one (or sometimes 2) day(s) apart
     else{streakLen = 1;}// If difference in days is too wide, restart the streak

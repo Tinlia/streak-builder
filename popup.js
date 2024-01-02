@@ -83,6 +83,7 @@ function showDeleteStreakButtons(deleteAll) {
   document.getElementById('deleteStreakConfirm').addEventListener('click', function() {
     deleteAll ? localStorage.clear() : localStorage.removeItem(currentDomain);
     if(deleteAll){window.close();}
+    checkStreak();
   })
 
   document.getElementById('deleteStreakCancel').addEventListener('click', function() {

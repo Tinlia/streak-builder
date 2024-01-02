@@ -1,8 +1,13 @@
 div{
     font-family: Verdana, Geneva, Tahoma, sans-serif !important; 
 }
-#streakNumber{
+#logo{
     max-width: 80%;
+    margin-left: -10px;
+}
+#streak{
+    max-width: 80%;
+    font-size: medium;
     margin-left: auto;
     margin-right: auto;
 }
@@ -12,7 +17,20 @@ div{
     text-align: center;
     background-color: transparent;
 }
+#topText{
+    font-size: 130%;
+}
+#version{
+    margin-left: -9%;
+    margin-top: 15%;
+    font-size: 60%;
+    margin-right: auto;
+    text-align: center;
+    background-color: transparent;
+
+}
 .buttonBar{
+    cursor: pointer;
     padding: 8px;             
     border-radius: 8px; 
     border: 0px solid black;
@@ -22,9 +40,6 @@ div{
     margin:5px;
     width:auto; min-width: 40px;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
-}
-button a {
-    text-decoration: none;
 }
 .body-block {
     background-color: #f0f0f0;
@@ -37,6 +52,7 @@ button a {
     font-size: 110%;
 }
 #newStreak {
+    cursor: pointer;
     background-color: #a0e45f;
     color: black;
     border: 1px solid black;
@@ -54,8 +70,10 @@ body {
 .popup-content {
     overflow: auto; 
     word-wrap: break-word; 
+    min-width: 250px;
 }
 #deleteStreak,#deleteStreakCancel{
+    cursor: pointer;
     background-color: #e54545;
     color: black;
     border: 1px solid black;
@@ -67,6 +85,7 @@ body {
     font-size: 100%;
 }
 #deleteStreakConfirm{
+    cursor: pointer;
     background-color: #a0e45f;
     color: black;
     border: 1px solid black;

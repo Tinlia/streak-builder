@@ -8,6 +8,14 @@ var lightMode = JSON.parse(localStorage.getItem('lightMode'));
 console.log("Light Mode = localStorage.getItem(", lightMode,")");
 if( lightMode == null ){ lightMode = false; localStorage.setItem( 'lightMode' , false ); }
 
+/*
+  Delete the following before merging test branch to main:
+  - +1 Button
+  - Console logs
+  - Comments
+  - This comment
+*/
+
 document.addEventListener('DOMContentLoaded', function() {
   console.log("DOM Loaded");
   console.log("Light Mode: ", lightMode);
@@ -15,15 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
   changeColor(true);
   console.log("dateNum = (", currentDate.getDate(),")");
   dateNum = currentDate.getDate();
-
-  // Clear all records and streaks
-  document.getElementById('clearAll').addEventListener('click', function() {
-    showDeleteStreakButtons(true);
-  });
-
-  document.getElementById('lightDarkToggle').addEventListener('click', function() {
-    changeColor(false);
-  });
+  createEventListeners();
 });
 
 // checkStreak()
@@ -59,7 +59,7 @@ function checkStreak(){
     console.log("Getting dates from ", dateNum ," and ", lastVisit);
     var differenceInDays = dateNum - lastVisit;
     
-    if(differenceInDays == 0){console.log("Same Day!");} // If the same day
+    if(differenceInDays == 0){console.log("Same Day!"); streakLen += 1;} // If the same day
     else if(differenceInDays == 1){streakLen += 1;} // If one day apart
     else if(differenceInDays <= -29 && dateNum == 1){streakLen +=1;} // If new month & one (or sometimes 2) day(s) apart
     else{streakLen = 1;}// If difference in days is too wide, restart the streak
@@ -84,6 +84,7 @@ function checkStreak(){
   }
 }
 
+// Switch between Light and Dark mode
 function changeColor(firstTime){
   console.log("First time is ", firstTime, " and lightMode is ", lightMode);
   var LDModeButton = document.getElementById('lightDarkToggle');
@@ -97,22 +98,23 @@ function changeColor(firstTime){
   }
   document.getElementById('body-block').style.backgroundColor = lightMode?`rgb(80, 72, 97)`:`rgb(240, 240, 240)`;
   document.getElementById('buttonBarID').style.backgroundColor = lightMode?`rgb(53, 47, 66)`:`white`;
+  document.getElementById('logo').src = lightMode?`images/StreakBuilderDark.png`:`images/StreakBuilderLight.png`;
   document.body.style.backgroundColor = lightMode?`rgb(53, 47, 66)`: `white`;
   document.body.style.color = lightMode?`white`: `black`;
   LDModeButton.innerHTML = lightMode?'☀️': '🌙';
   console.log("Colour Changed, Light Mode: ", lightMode);
 }
 
-// Button Displayers
+// Show streak info
 function showStreakInfo(){
   document.getElementById('streak').innerHTML = `
-      <p>Current Streak: </br>🔥 ` + streakLen + ` </br></br>
+      <p>Current Streak: </br>🔥 ` + streakLen + ` </br>
       <p>Max Streak: </br>🔥 ` + maxStreak + `</p></br>
       <button id="deleteStreak" type="button">🗑️</button>` 
-      + `${domainPath.includes('/Tinlia/')?"</br></br><i>Thanks for checking out my work!</i>":""}`
-      ;
+      + `${domainPath.includes('/Tinlia/')?"</br></br><i>Thanks for checking out my work!</i>":""}`;
 }
 
+// Button Displayers
 function showStartStreakButton(){
   document.getElementById('streak').innerHTML = `<button id="newStreak" type="button"><b>+</b> Start a 🔥Streak</button>`;
 }
@@ -126,9 +128,9 @@ function showDeleteStreakButtons(deleteAll) {
   document.getElementById('deleteStreakConfirm').addEventListener('click', function() {
     console.log(deleteAll ? "Removing all entries..." : "Deleting streak by removing ", currentDomain);
     deleteAll ? localStorage.clear() : localStorage.removeItem(currentDomain);
-    showStartStreakButton();
     console.log("Deletion complete!");
     if(deleteAll){window.close();} // Close popup if all entries are deleted
+    checkStreak();
   })
 
   // Cancel Delete Listener
@@ -138,6 +140,7 @@ function showDeleteStreakButtons(deleteAll) {
   })
 }
 
+// Get current tab
 function getTab(){
   console.log("Querying current tab...");
   // Fetch current tab's website title and update popup with domain name
@@ -153,7 +156,7 @@ function getTab(){
       if(domain.protocol!='chrome:'){
         console.log("checkStreak() called");
         checkStreak();
-        document.getElementById('topText').innerHTML = domain.host;
+        document.getElementById('topText').innerHTML = domain.host; 
       }
       else{
         document.getElementById('topText').innerHTML = "Switch to a website to view your streak progress.";
@@ -161,5 +164,34 @@ function getTab(){
       }
     }
     else{checkStreak();}
+  });
+}
+
+function createEventListeners(){
+  document.getElementById('bugReport').addEventListener('click', function() {
+    window.open('https://github.com/Tinlia/streak-builder/issues/new', '_blank');
+  });
+
+  document.getElementById('help').addEventListener('click', function() {
+    window.open('https://github.com/Tinlia/streak-builder', '_blank');
+  });
+
+  // +1 Button for testing
+  // document.getElementById('addOne').addEventListener('click', function() {
+  //   console.log("Add One Clicked!");
+  //   console.log("Adding one to streak: ", streakLen, " +1 = ", streakLen+1);
+  //   streakLen += 1;
+  //   checkStreak();
+  //   console.log("New Storage Entry! Key: ", currentDomain, " Value: JSON.stringify(", streakInfoArray),")";
+  //   localStorage.setItem(currentDomain, JSON.stringify(streakInfoArray))
+  // }); 
+
+  // Clear all records and streaks
+  document.getElementById('clearAll').addEventListener('click', function() {
+    showDeleteStreakButtons(true);
+  });
+
+  document.getElementById('lightDarkToggle').addEventListener('click', function() {
+    changeColor(false);
   });
 }

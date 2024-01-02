@@ -1,61 +1,28 @@
 var currentDomain = "";
+var domainPath = "";
 var currentDate = new Date();
 var dateNum = 0
 var streakLen, maxStreak, lastVisit;
 var streakInfoArray = [streakLen, maxStreak, lastVisit];
+var lightMode = JSON.parse(localStorage.getItem('lightMode'));
+console.log("Light Mode = localStorage.getItem(", lightMode,")");
+if( lightMode == null ){ lightMode = false; localStorage.setItem( 'lightMode' , false ); }
 
 document.addEventListener('DOMContentLoaded', function() {
   console.log("DOM Loaded");
+  console.log("Light Mode: ", lightMode);
   getTab();
-  console.log("dateNum = currentDate.getDate() | ", dateNum, " = ", currentDate, ".getDate() (", currentDate.getDate(),")");
+  changeColor(true);
+  console.log("dateNum = (", currentDate.getDate(),")");
   dateNum = currentDate.getDate();
 
   // Clear all records and streaks
   document.getElementById('clearAll').addEventListener('click', function() {
     showDeleteStreakButtons(true);
-    //// Future me: find a way to reduce this
-    document.getElementById('deleteStreakConfirm').addEventListener('click', function() {
-      console.log("Removing all entries...");
-      localStorage.clear();
-      showStartStreakButton();
-      console.log("Local Storage Cleared!");
-      dateNum = currentDate.getDate();
-      getTab();
-    })
-    
-    // Cancel Delete Listener
-    document.getElementById('deleteStreakCancel').addEventListener('click', function() {
-      console.log("Streak Deletion Cancelled!");
-      getTab();
-    })
-  })
+  });
 
   document.getElementById('lightDarkToggle').addEventListener('click', function() {
-    var slider = document.getElementById('lightDarkToggle');
-    var clearButton = document.getElementById('clearAll');
-
-    if(slider.value == 'light'){ 
-      document.body.style.backgroundColor = `rgb(53, 47, 66)`;
-      document.body.style.color = 'white';
-      document.getElementById('body-block').style.backgroundColor = `rgb(80, 72, 97)`;
-      
-      clearButton.style.backgroundColor = `rgb(70, 62, 87)`;
-      clearButton.style.color = `white`;
-      slider.style.backgroundColor = `rgb(70, 62, 87)`;
-      slider.innerHTML = '☀️';
-      slider.value = 'dark';
-    }
-    else{
-      document.body.style.backgroundColor = `white`;
-      document.body.style.color = 'black';
-      document.getElementById('body-block').style.backgroundColor = `rgb(240, 240, 240)`;
-      
-      clearButton.style.backgroundColor = `rgb(224, 224, 224)`;
-      clearButton.style.color = `black`;
-      slider.style.backgroundColor = `rgb(224, 224, 224)`;
-      slider.innerHTML = '🌙';
-      slider.value = 'light';
-    }
+    changeColor(false);
   });
 });
 
@@ -64,7 +31,7 @@ function checkStreak(){
   console.log("Checking Streak..");
   // Check if there's a dict in storage
   // If the domain doesn't have a streak
-  if(localStorage.getItem(currentDomain) == null || currentDomain[0] == null){
+  if(localStorage.getItem(currentDomain) == null || currentDomain.includes(null)){
     console.log("No Streak found, showing + Start Streak button");
     showStartStreakButton()
     // Eventlistener for onClick
@@ -83,9 +50,7 @@ function checkStreak(){
     console.log("Parsing with JSON...");
     var streakDetails = JSON.parse(localStorage.getItem(currentDomain));
     console.log("Declaring Streak Details, Current: ", streakDetails);
-    streakLen = streakDetails[0];
-    maxStreak = streakDetails[1];
-    lastVisit = streakDetails[2];
+    [streakLen, maxStreak, lastVisit] = streakDetails;
     console.log("Streak details declared! Current: ",streakDetails);
 
     //// NOTE: This is a bandage fix and should be changed to properly represent the difference in dates
@@ -115,49 +80,62 @@ function checkStreak(){
     document.getElementById('deleteStreak').addEventListener('click', function() {
       console.log("Delete Streak Clicked, Are you sure?");
       showDeleteStreakButtons(false);
-      // Confirm Delete Listener
-      document.getElementById('deleteStreakConfirm').addEventListener('click', function() {
-        console.log("Deleting streak by removing ", currentDomain);
-        localStorage.removeItem(currentDomain);
-        showStartStreakButton();
-        console.log("checkStreak() called");
-        checkStreak();
-      })
-      
-      // Cancel Delete Listener
-      document.getElementById('deleteStreakCancel').addEventListener('click', function() {
-        console.log("Streak Deletion Cancelled!");
-        checkStreak();
-      })
     })
   }
 }
 
+function changeColor(firstTime){
+  console.log("First time is ", firstTime, " and lightMode is ", lightMode);
+  var LDModeButton = document.getElementById('lightDarkToggle');
+  var buttons = document.getElementsByClassName('buttonBar');
+  if(!firstTime){lightMode = lightMode ? false : true; localStorage.setItem('lightMode', lightMode); console.log("Not First Time Reached, LightMode = ", lightMode);}
+  // Iterate through all buttons and change their colors
+  for (var i = 0; i < buttons.length; i++) {
+    console.log("Light Mode: ", lightMode);
+    buttons[i].style.backgroundColor = lightMode? `rgb(80, 72, 97)`:`rgb(240, 240, 240)`;
+    buttons[i].style.color = lightMode?`white`: `black`;
+  }
+  document.getElementById('body-block').style.backgroundColor = lightMode?`rgb(80, 72, 97)`:`rgb(240, 240, 240)`;
+  document.getElementById('buttonBarID').style.backgroundColor = lightMode?`rgb(53, 47, 66)`:`white`;
+  document.body.style.backgroundColor = lightMode?`rgb(53, 47, 66)`: `white`;
+  document.body.style.color = lightMode?`white`: `black`;
+  LDModeButton.innerHTML = lightMode?'☀️': '🌙';
+  console.log("Colour Changed, Light Mode: ", lightMode);
+}
 
 // Button Displayers
 function showStreakInfo(){
   document.getElementById('streak').innerHTML = `
-      <p>Current Streak: </br>🔥 ` + streakLen + ` 
-      </br></br>
-      <p>Max Streak: </br>🔥 ` + maxStreak + `</p>
-      </br>
-      <button id="deleteStreak" type="button">🗑️</button>   
-      `;
+      <p>Current Streak: </br>🔥 ` + streakLen + ` </br></br>
+      <p>Max Streak: </br>🔥 ` + maxStreak + `</p></br>
+      <button id="deleteStreak" type="button">🗑️</button>` 
+      + `${domainPath.includes('/Tinlia/')?"</br></br><i>Thanks for checking out my work!</i>":""}`
+      ;
 }
 
 function showStartStreakButton(){
-  document.getElementById('streak').innerHTML = `
-    <button id="newStreak" type="button"><b>+</b> Start a 🔥Streak</button>
-    `;
+  document.getElementById('streak').innerHTML = `<button id="newStreak" type="button"><b>+</b> Start a 🔥Streak</button>`;
 }
 
-function showDeleteStreakButtons(deleteAll){
+function showDeleteStreakButtons(deleteAll) {
   document.getElementById('streak').innerHTML = `
-      Delete` + (deleteAll ? " all of your streaks" : " this streak") + `? (This cannot be undone)
-      <br><br>
+      Delete${deleteAll ? " all of your streaks" : " this streak"}? (This cannot be undone)<br><br>
       <button id="deleteStreakConfirm" type="button">✔️</button>
-      <button id="deleteStreakCancel" type="button">❌</button>
-      `;
+      <button id="deleteStreakCancel" type="button">❌</button>`;
+
+  document.getElementById('deleteStreakConfirm').addEventListener('click', function() {
+    console.log(deleteAll ? "Removing all entries..." : "Deleting streak by removing ", currentDomain);
+    deleteAll ? localStorage.clear() : localStorage.removeItem(currentDomain);
+    showStartStreakButton();
+    console.log("Deletion complete!");
+    if(deleteAll){window.close();} // Close popup if all entries are deleted
+  })
+
+  // Cancel Delete Listener
+  document.getElementById('deleteStreakCancel').addEventListener('click', function() {
+    console.log("Streak Deletion Cancelled!");
+    getTab();
+  })
 }
 
 function getTab(){
@@ -169,6 +147,7 @@ function getTab(){
     // If switching to a different website
     if(domain.host != currentDomain){
       currentDomain = domain.host;
+      domainPath = domain.pathname;
       console.log("Domain is not the same as last tab!");
       // If not a type of chrome:// tab
       if(domain.protocol!='chrome:'){

@@ -3,36 +3,27 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Site Streak Tracker</title>
+    <title>StreakBuilder</title>
     <link rel="stylesheet" href="style.css">
   </head>
 
   <body>
-    <i>V 1.0</i>
+    <i>V 1.1</i>
     <div class="popup-content">
-      <div class="buttonBar">
-        <button id="lightDarkToggle" type="button" value="light"> 
-          🌙<!--☀️-->
-        </button>
-        <button id="clearAll" type="button"> 
-          Clear All
-        </button>
+      <div id="buttonBarID">
+        <button class="buttonBar" id="bugReport" type="button"><a href="https://github.com/Tinlia/streak-builder/issues/new">🐞</a></button>        
+        <button class="buttonBar" id="help" type="button"><a href="https://github.com/Tinlia/streak-builder">❓</a></button>
+        <button class="buttonBar" id="lightDarkToggle" type="button" value="light">🌙</button>
+        <button class="buttonBar" id="clearAll" type="button">Clear All</button>
       </div>
 
-      <!--Holds Data in a grey box-->
       <div class="body-block" id="body-block">
         <!--Website name-->
-        <p id="topText">
-          If you're seeing this, please report it <a href="https://github.com/Tinlia">here</a>
-        </p>
-
+        <p id="topText"></p>
+        
         <!--Streak amount-->
-        <div id="streak">
-          Oops, this is a bug too.. Please report it <a href="https://github.com/Tinlia">here!</a>
-        </div>
+        <div id="streak"></div>
       </div>
-
-      <!-- <div id="sitesList"></div> -->
     </div>
     <script src="popup.js"></script>
   </body>

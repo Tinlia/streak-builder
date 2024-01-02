@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "StreakBuilder",
-  "version": "1.0",
-  "description": "Build good habits with Streaks on websites of your choice!",
+  "version": "1.1",
+  "description": "Build solid habits with Streaks on websites of your choice!",
   "permissions": [
     "storage",
     "activeTab",

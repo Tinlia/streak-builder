@@ -17,7 +17,7 @@ Come back each day to that website to watch your streak grow!
 ## Easy-to-use
 Start and stop streaks with just the click of a button. Quick response times and a simple layout converge to create an efficient user experience.
 <p align="center">
-  <img src="https://github.com/Tinlia/streak-builder/assets/65005430/b64bc5d3-c89a-4cc2-8a75-8d5572ba3684" width="20%">
+  <img src="https://github.com/Tinlia/streak-builder/assets/65005430/b64bc5d3-c89a-4cc2-8a75-8d5572ba3684" width="40%">
 </p>
 
 ## Minimal Data Storage and Easy Removal

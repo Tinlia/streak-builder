@@ -124,7 +124,6 @@ function changeColor(firstTime){
   LDModeButton.innerHTML = lightMode?'☀️': '🌙';
 }
 
-// Show streak info
 function showStreakInfo(){
   document.getElementById('streak').innerHTML = `
       <p>Current Streak: </br>🔥 ` + streakLen + ` </br>
@@ -133,7 +132,6 @@ function showStreakInfo(){
       + `${domainPath.includes('/Tinlia/')?"</br></br><i>Thanks for checking out my work!</i>":""}`;
 }
 
-// Button Displayers
 function showStartStreakButton(){
   document.getElementById('streak').innerHTML = `<button id="newStreak" type="button"><b>+</b> Start a 🔥Streak</button>`;
 }
@@ -170,7 +168,6 @@ function showDeleteStreakButtons(deleteAll) {
     }
   })
 
-  // Cancel Delete Listener
   document.getElementById('deleteStreakCancel').addEventListener('click', function() {
     console.log("Streak Deletion Cancelled!");
     getTab();

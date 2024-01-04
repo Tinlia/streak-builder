@@ -10,14 +10,14 @@ A simple Chrome extension that builds and manages streaks on visited websites.
 # Key Features
 
 ## Streaks
-**Streaks** are daily milestones you can achieve with daily activity on websites. 
-For any site you wish, you can choose to start a streak for it by opening the extension and clicking "+ Start a Streak." 
-Come back each day to that website and watch your streak grow!
+**Streaks** are counters you can increase with daily activity on websites. 
+For any site, you can choose to start a streak for it by opening the extension and clicking "+ Start a Streak." 
+Come back each day to that website to watch your streak grow!
 
 ## Easy-to-use
-Start and stop streaks with just the click of a button. Quick response times and a simple layout combine to create an efficient user experience.
+Start and stop streaks with just the click of a button. Quick response times and a simple layout converge to create an efficient user experience.
 <p align="center">
-  <img src="https://github.com/Tinlia/streak-builder/assets/65005430/fd69adab-4cf5-40b6-94c1-a4101d86c158" />
+  <img src="https://github.com/Tinlia/streak-builder/assets/65005430/b64bc5d3-c89a-4cc2-8a75-8d5572ba3684" width="20%">
 </p>
 
 ## Minimal Data Storage and Easy Removal

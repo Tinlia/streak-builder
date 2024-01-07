@@ -14,6 +14,9 @@ A simple Chrome extension that builds and manages streaks on visited websites.
 For any site, you can choose to start a streak for it by opening the extension and clicking "+ Start a Streak." 
 Come back each day to that website to watch your streak grow!
 
+## 💎 Gems
+**Gems** are a completely free currency that users can gain by increasing their streaks. Streaks will earn users an extra `+1 💎` for every 10 days the streak has been active
+
 ## Easy-to-use
 Start and stop streaks with just the click of a button. Quick response times and a simple layout converge to create an efficient user experience.
 <p align="center">

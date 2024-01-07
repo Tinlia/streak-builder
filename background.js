@@ -12,7 +12,7 @@ function updateBadgeText(tab) {
             [streakLength, maxStreak, lastVisit] = streakDetails;
             if(today - lastVisit === 1 || (today - lastVisit <= -29 && today == 1)){
                 streakLength++;
-                giveGem(1);
+                giveGem(1 + Math.floor(streakLength/10));
             }else if (today - lastVisit !== 0){ // Lose the streak
                 streakLength = 0;
             }

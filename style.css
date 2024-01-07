@@ -26,43 +26,23 @@ div{
     font-size: 60%;
     margin-right: auto;
     text-align: center;
-    background-color: transparent;
-
-}
-.buttonBar{
-    cursor: pointer;
-    padding: 8px;             
-    border-radius: 8px; 
-    border: 0px solid black;
-    text-align: center;
-    margin-left: auto;    
-    margin-right: auto;
-    margin:5px;
-    width:auto; min-width: 40px;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    background-color: transparent !important;
 }
 .body-block {
     background-color: #f0f0f0;
     padding: 20px;             
     border-radius: 8px;        
     width: 80%;                
-    margin-left: auto;    
+    margin-left: auto;
     margin-right: auto;
     text-align: center;
     font-size: 110%;
 }
-#newStreak {
-    cursor: pointer;
-    background-color: #a0e45f;
-    color: black;
-    border: 1px solid black;
-    border-radius: 8px;      
-    margin: auto;  
-    width: 80%;   
-    padding: 5%;             
-    text-align: center;
+#gems{
+    min-width: 70%;
+    margin-top: -10px;
+    margin-right: -120px;
     font-size: 110%;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 body {
     min-width: 200px;
@@ -72,7 +52,7 @@ body {
     word-wrap: break-word; 
     min-width: 250px;
 }
-#deleteStreak,#deleteStreakCancel{
+#deleteStreak, #deleteStreakCancel, #deleteStreakConfirm, #newStreak, .buttonBar{
     cursor: pointer;
     background-color: #e54545;
     color: black;
@@ -80,19 +60,16 @@ body {
     border-radius: 8px;      
     margin: auto;
     width: auto;  
-    padding: 2.5%;             
+    padding: 4%;             
     text-align: center;
-    font-size: 100%;
+    font-size: 110%;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
-#deleteStreakConfirm{
-    cursor: pointer;
-    background-color: #a0e45f;
-    color: black;
-    border: 1px solid black;
-    border-radius: 8px;      
-    margin: auto; 
-    width: auto;  
-    padding: 2.5%;             
-    text-align: center;
-    font-size: 100%;
+#deleteStreakConfirm, #newStreak{
+    background-color: #a0e45f !important;
+}
+.buttonBar{     
+    border: 0px solid black;
+    margin:5px;
+    min-width: 40px;
 }

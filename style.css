@@ -10,6 +10,7 @@ div{
     font-size: medium;
     margin-left: auto;
     margin-right: auto;
+    align-items: center;
 }
 #buttonBarID{
     margin-left: auto;
@@ -46,7 +47,7 @@ body {
     word-wrap: break-word; 
     min-width: 250px;
 }
-#deleteStreak, #deleteStreakCancel, #deleteStreakConfirm, #newStreak, .buttonBar, #gems{
+#deleteStreak, #deleteStreakCancel, #deleteStreakConfirm, #newStreak, .buttonBar, #gems, .gemShopItem, .purchaseGemShopItem{
     cursor: pointer;
     background-color: #e54545;
     color: black;
@@ -64,11 +65,38 @@ body {
 }
 .buttonBar, #gems{     
     border: 0px solid black;
-    margin:5px;
+    margin: 5px;
     min-width: 40px;
 }
 #gems{
     background-color: #f0f0f0;
     margin-right: 5%; margin-left: 10%;
     font-size: small;
+}
+.gemShopItem{
+    border: 0px solid black;
+    cursor: default;
+    display: flex;
+    align-items: center;
+    width: 120%;
+    font-size: 55%;
+    padding: auto;
+    margin: auto;
+    margin-left: -15%;
+    margin-right:10%;
+}
+#gemShopItemTitle{
+    margin-left: 5%;
+    margin-right: 5%;
+    text-align: center;
+    font-size: 160%;
+}
+.purchaseGemShopItem{
+    border: 2px solid white;
+    margin-left: auto;
+    margin-right: 0px;
+    text-align: center;
+    font-size: 150%;
+    min-width: 30%;
+    box-shadow: 0px 4px 0px 0px rgba(67, 67, 67, 0.75);
 }

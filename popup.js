@@ -1,7 +1,7 @@
 var currentDomain = "" , domainPath = "";
 var dateNum = new Date().getDate();
-var streakLen, maxStreak, lastVisit;
-var streakInfoArray = [streakLen, maxStreak, lastVisit];
+var streakLen, maxStreak, lastVisit, streakFreezeActive;
+var streakInfoArray = [streakLen, maxStreak, lastVisit, streakFreezeActive];
 var lightMode, gemCount = 0;
 
 
@@ -77,9 +77,9 @@ function checkStreak(){
       document.getElementById('newStreak').addEventListener('click', () => createNewStreak());
     }
     else{
-      [streakLen, maxStreak, lastVisit] = streakDetails;
+      [streakLen, maxStreak, lastVisit, streakFreezeActive] = streakDetails;
       showStreakInfo();
-      streakInfoArray = [streakLen, Math.max(streakLen,maxStreak), dateNum]; 
+      streakInfoArray = [streakLen, Math.max(streakLen,maxStreak), dateNum, streakFreezeActive]; 
       var obj = {};
       obj[currentDomain] = streakInfoArray;
       chrome.storage.local.set(obj);
@@ -164,7 +164,7 @@ function showDeleteStreakButtons(deleteAll) {
 
 // Create a new streak
 function createNewStreak(){
-  streakInfoArray = [1, 1, dateNum]
+  streakInfoArray = [1, 1, dateNum, false]
   var obj = {};
   obj[currentDomain] = streakInfoArray;
   chrome.storage.local.set(obj, () => checkStreak());
@@ -182,7 +182,7 @@ function loadGemShop(){
     topText.innerHTML = `💎${gemCount} <br> Gem Shop`;
     streak.innerHTML = `
     <div class="gemShopItem">
-      <img src="images/StreakFreeze.png" width="25%" height="25%"> <p id="gemShopItemTitle">Streak Freeze!</p> <button class="purchaseGemShopItem" id="streakFreeze" type="button"><b>💎25</b></button>
+      <img src="images/StreakFreeze.png" width="25%" height="25%"> <p id="gemShopItemTitle">Streak Freeze!</p> <button class="purchaseGemShopItem" id="streakFreeze" type="button"><b>💎20</b></button>
     </div> <br>
     <div class="gemShopItem">
       <img src="images/icon.png"width="25%" height="25%"> <p id="gemShopItemTitle">Buy 10 Gems</p> <button class="purchaseGemShopItem" id="buyGems" type="button"><b>💎0</b></button>
@@ -204,37 +204,47 @@ function loadGemShop(){
     // turn gem shop button into a go-back button
     gems.innerHTML = "←";
 
+    // Check local for if a streakFreeze is active
+
+
+
     // Create eventListeners for each purchaseGemShopItem button
-    document.getElementById('streakFreeze').addEventListener('click', () => {
-      let streakFreeze = document.getElementById('streakFreeze');
-      let buyGems = document.getElementById('buyGems');
-      let cost = 20; // Price of item
+    let streakFreeze = document.getElementById('streakFreeze');
+    let buyGems = document.getElementById('buyGems');
+    if(streakFreezeActive == null || streakFreezeActive == false){
+      document.getElementById('streakFreeze').addEventListener('click', () => {
+        console.log("Streak Freeze is inactive!", streakFreezeActive);
+        let cost = 20; // Price of item
 
-      if(gemCount >= cost){
-        gemCount -= cost;
-        streakLen++; // Remove
-        chrome.storage.local.set({'gems': gemCount});
-        chrome.storage.local.set({[currentDomain]: [streakLen, Math.max(streakLen,maxStreak), dateNum]});
-        streakFreeze.innerHTML = "✔️"; 
-        streakFreeze.style.backgroundColor = "#a0e45f";
-        setTimeout(() => {
-          streakFreeze.innerHTML = `💎 ${cost}`;
-          streakFreeze.style.backgroundColor = lightMode? `rgb(125, 117, 142)`:`rgb(240, 240, 240)`;
-        }, 1500);
-        topText.innerHTML = `💎${gemCount} <br> Gem Shop`;
-      }
-      else{
-        streakFreeze.innerHTML = "❌";
-        topText.innerHTML = `💎${gemCount} <br> Insufficient Gems!`;
-        streakFreeze.style.backgroundColor = "#e54545";
-        setTimeout(() => {
-          streakFreeze.innerHTML = `💎 ${cost}`;
+        if(gemCount >= cost){
+          gemCount -= cost;
+          chrome.storage.local.set({'gems': gemCount});
+          chrome.storage.local.set({[currentDomain]: [streakLen, Math.max(streakLen,maxStreak), dateNum, true]});
+          streakFreeze.innerHTML = "✔️"; 
+          streakFreeze.style.backgroundColor = "#a0e45f";
+          setTimeout(() => {
+            streakFreeze.innerHTML = `💎 ${cost}`;
+            streakFreeze.style.backgroundColor = lightMode? `rgb(125, 117, 142)`:`rgb(240, 240, 240)`;
+          }, 1500);
           topText.innerHTML = `💎${gemCount} <br> Gem Shop`;
-          streakFreeze.style.backgroundColor = lightMode? `rgb(125, 117, 142)`:`rgb(240, 240, 240)`;
-        }, 1000);
-      }
-    });
-
+        }
+        else{
+          streakFreeze.innerHTML = "❌";
+          topText.innerHTML = `💎${gemCount} <br> Insufficient Gems!`;
+          streakFreeze.style.backgroundColor = "#e54545";
+          setTimeout(() => {
+            streakFreeze.innerHTML = `💎 ${cost}`;
+            topText.innerHTML = `💎${gemCount} <br> Gem Shop`;
+            streakFreeze.style.backgroundColor = lightMode? `rgb(125, 117, 142)`:`rgb(240, 240, 240)`;
+          }, 1000);
+        }
+      });
+    }
+    else{
+      console.log("Streak Freeze is active! : ", streakFreezeActive);
+      streakFreeze.innerHTML = "✔️"; 
+      streakFreeze.style.backgroundColor = "#a0e45f";
+    }
     document.getElementById('buyGems').addEventListener('click', () => {
       gemCount += 10;
       chrome.storage.local.set({'gems': gemCount});
@@ -248,7 +258,7 @@ function loadGemShop(){
     });
   }
   else{
-    console.log("Returning to streak info..., gems.value: ", gems.value);
+    console.log("Returning to streak info... gems.value: ", gems.value);
     // Create eventListener for goBack button
     gems.value = "shop";
     gems.innerHTML = "💎 " + gemCount;

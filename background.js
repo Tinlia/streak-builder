@@ -2,25 +2,25 @@ function updateBadgeText(tab) {
     let url = tab.url;
     let domain = new URL(url).host;
     let today = new Date().getDate();
-    let streakLength = 0, maxStreak = 0, lastVisit = 0;
+    let streakLength = 0, maxStreak = 0, lastVisit = 0, streakFreezeActive = false;
 
     // Get the streak details from chrome.storage.local
     chrome.storage.local.get([domain], function(result) {
         console.log("Result: ", result);
         if (result[domain] !== undefined) {
             const streakDetails = result[domain];
-            [streakLength, maxStreak, lastVisit] = streakDetails;
+            [streakLength, maxStreak, lastVisit, streakFreezeActive] = streakDetails;
             if(today - lastVisit === 1 || (today - lastVisit <= -29 && today == 1)){
                 streakLength++;
                 giveGem(1 + Math.floor(streakLength/10));
-                // showStreakUpNotification();
             }else if (today - lastVisit !== 0){ // Lose the streak
-                streakLength = 0;
-                // Create notification to tell user that they lost their streak
-                // showLostStreakNotification();
+                console.log("StreakFreezeActive: ", streakFreezeActive);
+                streakLength = streakFreezeActive&&today-lastVisit==2 ? streakLength : 0;
+                streakFreezeActive = false;
+                console.log("StreakFreezeActive: ", streakFreezeActive);
             }
             console.log("Domain found in storage! Domain: ", domain);
-            chrome.storage.local.set({[domain]: [streakLength, Math.max(streakLength, maxStreak), today]});
+            chrome.storage.local.set({[domain]: [streakLength, Math.max(streakLength, maxStreak), today, streakFreezeActive]});
         }else{
             console.log("Domain not found in storage! Domain: ", domain);
         }

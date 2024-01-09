@@ -13,11 +13,14 @@ function updateBadgeText(tab) {
             if(today - lastVisit === 1 || (today - lastVisit <= -29 && today == 1)){
                 streakLength++;
                 giveGem(1 + Math.floor(streakLength/10));
+                // showStreakUpNotification();
             }else if (today - lastVisit !== 0){ // Lose the streak
                 streakLength = 0;
+                // Create notification to tell user that they lost their streak
+                // showLostStreakNotification();
             }
             console.log("Domain found in storage! Domain: ", domain);
-            chrome.storage.local.set({[domain]: [streakLength, Math.max(streakLength, maxStreak), today]}); // LastVisit = yesterday (test)
+            chrome.storage.local.set({[domain]: [streakLength, Math.max(streakLength, maxStreak), today]});
         }else{
             console.log("Domain not found in storage! Domain: ", domain);
         }
@@ -39,7 +42,7 @@ function giveGem(gemsToAdd){
     chrome.storage.local.get('gems', function(result) {
         chrome.storage.local.set({'gems': result.gems + gemsToAdd});
     });
-  }
+}
 
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
     if (changeInfo.status === 'complete') {

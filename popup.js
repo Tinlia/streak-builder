@@ -4,6 +4,7 @@ var streakLen, maxStreak, lastVisit;
 var streakInfoArray = [streakLen, maxStreak, lastVisit];
 var lightMode, gemCount = 0;
 
+
 document.addEventListener('DOMContentLoaded', function() {
   console.log("[Creating event listeners...]");
   createEventListeners();
@@ -174,55 +175,83 @@ function loadGemShop(){
   var topText = document.getElementById('topText');
   var streak = document.getElementById('streak');
   var gems = document.getElementById('gems');
-  var goBack = document.getElementById('goBack');
-  topText.innerHTML = "Gem Shop";
-  streak.innerHTML = `
-  <div class="gemShopItem">
-    <img src="images/StreakUp.png" width="25%" height="25%"> <p id="gemShopItemTitle">Streak Up!</p> <button class="purchaseGemShopItem" id="buyStreakUp" type="button"><b>💎2</b></button>
-  </div> <br>
-  <div class="gemShopItem">
-    <img src="images/icon.png"width="25%" height="25%"> <p id="gemShopItemTitle">Buy 10 Gems</p> <button class="purchaseGemShopItem" id="buyGems" type="button"><b>💎0</b></button>
-  </div>
-  `;
-  var shopItems = document.getElementsByClassName('gemShopItem');
-  for (var i = 0; i < shopItems.length; i++) {
-    shopItems[i].style.backgroundColor = lightMode? `rgb(95, 87, 112)`:`rgb(227, 227, 227)`;
-    shopItems[i].style.color = lightMode?`white`: `black`;
-  }
 
-  var purchaseGemShopItems = document.getElementsByClassName('purchaseGemShopItem');
-  for (var i = 0; i < purchaseGemShopItems.length; i++) {
-    purchaseGemShopItems[i].style.border = lightMode? `2px solid rgb(53, 47, 66)`: `2px solid white`;
-    purchaseGemShopItems[i].style.backgroundColor = lightMode? `rgb(125, 117, 142)`:`rgb(240, 240, 240)`;
-    purchaseGemShopItems[i].style.color = lightMode?`white`: `black`;
-  }
-  // turn gem shop button into a go-back button
-  gems.innerHTML = "←"; gems.id = "goBack";
-
-  // Create eventListener for goBack button
-  document.getElementById('goBack').addEventListener('click', () => {
-    goBack.id = "gems";
-    gems.innerHTML = "💎 " + gemCount;
-    checkStreak();
-  });
-
-  // Create eventListeners for each purchaseGemShopItem buttom
-  document.getElementById('buyStreakUp').addEventListener('click', () => {
-    if(gemCount >= 2){
-      gemCount -= 2;
-      chrome.storage.local.set({'gems': gemCount});
-      streakLen++;
-      chrome.storage.local.set({[currentDomain]: [streakLen, Math.max(streakLen,maxStreak), dateNum]});
+  if(gems.value == "shop"){
+    console.log("Showing shop..., gems.value: ", gems.value);
+    gems.value = "back";
+    topText.innerHTML = `💎${gemCount} <br> Gem Shop`;
+    streak.innerHTML = `
+    <div class="gemShopItem">
+      <img src="images/StreakUp.png" width="25%" height="25%"> <p id="gemShopItemTitle">Streak Up!</p> <button class="purchaseGemShopItem" id="buyStreakUp" type="button"><b>💎2</b></button>
+    </div> <br>
+    <div class="gemShopItem">
+      <img src="images/icon.png"width="25%" height="25%"> <p id="gemShopItemTitle">Buy 10 Gems</p> <button class="purchaseGemShopItem" id="buyGems" type="button"><b>💎0</b></button>
+    </div>
+    `;
+    var shopItems = document.getElementsByClassName('gemShopItem');
+    for (var i = 0; i < shopItems.length; i++) {
+      shopItems[i].style.backgroundColor = lightMode? `rgb(95, 87, 112)`:`rgb(227, 227, 227)`;
+      shopItems[i].style.color = lightMode?`white`: `black`;
     }
-  });
 
-  document.getElementById('buyGems').addEventListener('click', () => {
-    gemCount += 10;
-    chrome.storage.local.set({'gems': gemCount});
-  });
+    var purchaseGemShopItems = document.getElementsByClassName('purchaseGemShopItem');
+    for (var i = 0; i < purchaseGemShopItems.length; i++) {
+      purchaseGemShopItems[i].style.border = lightMode? `2px solid rgb(53, 47, 66)`: `2px solid white`;
+      purchaseGemShopItems[i].style.backgroundColor = lightMode? `rgb(125, 117, 142)`:`rgb(240, 240, 240)`;
+      purchaseGemShopItems[i].style.color = lightMode?`white`: `black`;
+    }
+    // turn gem shop button into a go-back button
+    gems.innerHTML = "←";
+
+    // Create eventListeners for each purchaseGemShopItem buttom
+    document.getElementById('buyStreakUp').addEventListener('click', () => {
+      let buyStreakUp = document.getElementById('buyStreakUp');
+      let buyGems = document.getElementById('buyGems');
+
+      if(gemCount >= 2){
+        gemCount -= 2;
+        streakLen++;
+        chrome.storage.local.set({'gems': gemCount});
+        chrome.storage.local.set({[currentDomain]: [streakLen, Math.max(streakLen,maxStreak), dateNum]});
+        buyStreakUp.innerHTML = "✔️"; // Green checkmark
+        setTimeout(() => {
+          buyStreakUp.innerHTML = `💎 2`;
+        }, 1500);
+        topText.innerHTML = `💎${gemCount} <br> Gem Shop`;
+      }
+      else{
+        buyStreakUp.innerHTML = "❌"; // Red X
+        topText.innerHTML = `💎${gemCount} <br> Insufficient Gems!`;
+
+        setTimeout(() => {
+          buyStreakUp.innerHTML = `💎 0`;
+          topText.innerHTML = `💎${gemCount} <br> Gem Shop`;
+
+        }, 1500);
+      }
+    });
+
+    document.getElementById('buyGems').addEventListener('click', () => {
+      gemCount += 10;
+      chrome.storage.local.set({'gems': gemCount});
+      topText.innerHTML = `💎${gemCount} <br> Gem Shop`;
+      buyGems.innerHTML = "✔️"; // Green checkmark
+      setTimeout(() => {
+        buyGems.innerHTML = `💎 0`;
+      }, 1500);
+    });
+  }
+  else{
+    console.log("Returning to streak info..., gems.value: ", gems.value);
+    // Create eventListener for goBack button
+    gems.value = "shop";
+    gems.innerHTML = "💎 " + gemCount;
+    topText.innerHTML = currentDomain;
+    checkStreak();
+  }
 }
 
-// Event Listeners
+// On-load Event Listeners
 function createEventListeners(){
   document.getElementById('bugReport').addEventListener('click', () => window.open('https://github.com/Tinlia/streak-builder/issues/new', '_blank'));
 

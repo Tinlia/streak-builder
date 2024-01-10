@@ -2,14 +2,18 @@ function updateBadgeText(tab) {
     let url = tab.url;
     let domain = new URL(url).host;
     let today = new Date().getDate();
-    let streakLength = 0, maxStreak = 0, lastVisit = 0, streakFreezeActive = false;
+    let streakLength = 0, maxStreak = 0, lastVisit = today, streakFreezeActive = false;
+    let streakDetails = [];
 
     // Get the streak details from chrome.storage.local
     chrome.storage.local.get([domain], function(result) {
-        console.log("Result: ", result);
-        if (result[domain] !== undefined) {
-            const streakDetails = result[domain];
+        console.log("[1] Result: ", result);
+        console.log("[1.5] Details: ", result[domain]);
+        if (result[domain] !== undefined && result[domain] !== null) {
+            streakDetails = result[domain];
             [streakLength, maxStreak, lastVisit, streakFreezeActive] = streakDetails;
+            console.log("[2] StreakDetails: ", streakDetails);
+            console.log("[3] StreakLength: ", streakLength, " MaxStreak: ", maxStreak, " LastVisit: ", lastVisit, " Today: ", today, " StreakFreezeActive: ", streakFreezeActive);
             if(today - lastVisit === 1 || (today - lastVisit <= -29 && today == 1)){
                 streakLength++;
                 giveGem(1 + Math.floor(streakLength/10));
@@ -20,7 +24,10 @@ function updateBadgeText(tab) {
                 console.log("StreakFreezeActive: ", streakFreezeActive);
             }
             console.log("Domain found in storage! Domain: ", domain);
-            chrome.storage.local.set({[domain]: [streakLength, Math.max(streakLength, maxStreak), today, streakFreezeActive]});
+            streakDetails = [streakLength, Math.max(streakLength, maxStreak), today, streakFreezeActive];
+            console.log("StreakDetailsToStore: ", streakDetails);
+            console.log("Storing StreakDetails for domain: ", domain);
+            chrome.storage.local.set({[domain]: streakDetails});  
         }else{
             console.log("Domain not found in storage! Domain: ", domain);
         }

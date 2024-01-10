@@ -5,43 +5,33 @@ var streakInfoArray = [];
 var lightMode, gemCount = 0;
 
 document.addEventListener('DOMContentLoaded', function() {
-  console.log("[Creating event listeners...]");
   createEventListeners();
   chrome.storage.local.get('gems', function(result) {
     gemCount = result.gems;
     document.getElementById('gems').innerHTML = "💎 " + gemCount;
   });
   getDetails();
-  console.log("[Setting lightMode...]"); 
   setLightMode().then(() => {
-    console.log("[Getting current tab...]");
     getTab();
-    console.log("[Changing colour...]");
     changeColor(true);
   });
 });
 
 function getDetails(){
   return new Promise((resolve, reject) => {
-    console.log("Getting details...");
     chrome.storage.local.get(currentDomain, function(result) {
-      console.log("Fetching details for: ", currentDomain);
-      console.log("StreakInfoArray: ", result[currentDomain]);
       streakInfoArray = result[currentDomain];
       if(streakInfoArray != null && streakInfoArray != undefined){
         [streakLen, maxStreak, lastVisit, streakFreezeActive] = streakInfoArray;
-        console.log("Streak details found: ", streakInfoArray);
         streakInfoArray = [streakLen, Math.max(streakLen,maxStreak), dateNum, streakFreezeActive]; 
-        console.log("Streak details declared: ", streakInfoArray);
         saveDetails();
       }
-      resolve(); // Move resolve() inside the callback
+      resolve();
     });
   });
 }
 
 function saveDetails(streakDuration = streakLen, maxStk = Math.max(streakLen, maxStreak), prevDay = dateNum, freezeActive = streakFreezeActive){
-  console.log("Saving details... [streakDuration, maxStk, prevDay, freezeActive]: ", streakDuration, maxStk, prevDay, freezeActive);
   streakInfoArray = [streakDuration, maxStk, prevDay, freezeActive];
   chrome.storage.local.set({[currentDomain]: streakInfoArray});
 }
@@ -51,7 +41,6 @@ function setLightMode(){
   return new Promise((resolve, reject) => {
     chrome.storage.local.get('lightMode', function(result) {
       lightMode = result.lightMode;
-      console.log("Extension opened, lightmode: ",lightMode);
       if(lightMode == undefined || lightMode == null) {
         lightMode = false;
         chrome.storage.local.set({'lightMode': lightMode}, resolve());
@@ -64,19 +53,15 @@ function setLightMode(){
 
 // Get current tab
 function getTab(){
-  console.log("Querying current tab...");
   // Fetch current tab's website title and update popup with domain name
   chrome.tabs.query({active:true,currentWindow:true},function(tabArray){
     var domain = new URL(tabArray[0].url);
-    console.log('Domain updated: ', domain.host);
     // If switching to a different website
     if(domain.host != currentDomain){
       currentDomain = domain.host;
       domainPath = domain.pathname;
-      console.log("Domain is not the same as last tab!");
       // If not a type of chrome:// tab
       if(domain.protocol!='chrome:'){
-        console.log("checkStreak() called");
         checkStreak();
         document.getElementById('topText').innerHTML = domain.host; 
         return domain.host;
@@ -94,7 +79,6 @@ function getTab(){
 // Check and display streak info
 function checkStreak(){
   getDetails().then(() => {
-    console.log("Streak details: ", streakInfoArray);
     if(streakInfoArray == null || streakInfoArray == undefined){
       showStartStreakButton();
       document.getElementById('gems').style.cursor = "default";
@@ -112,11 +96,9 @@ function checkStreak(){
 function changeColor(firstTime){
   var LDModeButton = document.getElementById('lightDarkToggle');
   var buttons = document.getElementsByClassName('buttonBar');
-  console.log("Changing colour, lightMode: ", lightMode, " firstTime: ", firstTime);
   if(!firstTime){
     lightMode = lightMode ? false : true;
     chrome.storage.local.set({'lightMode': lightMode});
-    console.log("Not first time, lightMode: ", lightMode);
   }
   for (var i = 0; i < buttons.length; i++) {
     buttons[i].style.backgroundColor = lightMode? `rgb(80, 72, 97)`:`rgb(240, 240, 240)`;
@@ -132,7 +114,6 @@ function changeColor(firstTime){
 
 // Show streak info
 function showStreakInfo(){
-  console.log("Showing streak info...");
   document.getElementById('streak').innerHTML = `
       <p>Current Streak: </br>🔥 ` + streakLen + ` </br>
       <p>Max Streak: </br>🔥 ` + maxStreak + `</p><br>
@@ -152,7 +133,6 @@ function showDeleteStreakButtons(deleteAll) {
       <button id="deleteStreakCancel" type="button">❌</button>`;
 
   document.getElementById('deleteStreakConfirm').addEventListener('click', function() {
-    console.log(deleteAll ? "Removing all entries..." : "Deleting streak by removing ", currentDomain);
     if(deleteAll) {
       chrome.storage.local.clear(function() {
         var error = chrome.runtime.lastError;
@@ -160,9 +140,8 @@ function showDeleteStreakButtons(deleteAll) {
           console.error(error); 
         } 
         else {
-          console.log("Deletion complete!");
           chrome.storage.local.set({'gems': gemCount}); // Gems persist through deletion
-          window.close(); // Close popup
+          window.close();
         }
       });
     } else {
@@ -172,19 +151,13 @@ function showDeleteStreakButtons(deleteAll) {
           if (error) {
             reject(error);
           } else {
-            console.log("Deletion complete!");
             resolve();
           }
         });
       }).then(() => checkStreak());
     }
   });
-
-  // Cancel Delete Listener
-  document.getElementById('deleteStreakCancel').addEventListener('click', function() {
-    console.log("Streak Deletion Cancelled!");
-    getTab();
-  });
+  document.getElementById('deleteStreakCancel').addEventListener('click', getTab());
 }
 
 // Create a new streak
@@ -204,12 +177,8 @@ function loadGemShop(){
     var gems = document.getElementById('gems');
 
     if(gems.value == "shop"){
-      console.log("Showing shop..., gems.value: ", gems.value);
       gems.value = "back";
       topText.innerHTML = `💎${gemCount} <br> Gem Shop`;
-      // Convert multiple buttons into a dictionary of {buttonID: [icon, title, cost]} that is iterated through to make buttons
-      
-
       streak.innerHTML = `
       <div class="gemShopItem">
         <img src="images/StreakFreeze.png" width="25%" height="25%"> <p id="gemShopItemTitle">Streak Freeze!</p> <button class="purchaseGemShopItem" id="streakFreeze" type="button"><b>💎20</b></button>
@@ -233,11 +202,7 @@ function loadGemShop(){
         purchaseGemShopItems[i].style.backgroundColor = lightMode? `rgb(125, 117, 142)`:`rgb(240, 240, 240)`;
         purchaseGemShopItems[i].style.color = lightMode?`white`: `black`;
       }
-
-      // turn gem shop button into a go-back button
       gems.innerHTML = "←";
-
-      // Create eventListeners for each purchaseGemShopItem button
       let streakFreeze = document.getElementById('streakFreeze');
       let buyGems = document.getElementById('buyGems');
       let streakUp = document.getElementById('streakUp');
@@ -245,7 +210,6 @@ function loadGemShop(){
       // Streak Freeze Listener
       if(streakFreezeActive == null || streakFreezeActive == false){
         streakFreeze.addEventListener('click', () => {
-          console.log("Streak Freeze is inactive!", streakFreezeActive);
           let cost = 20; // Price of item
 
           if(gemCount >= cost){
@@ -269,7 +233,6 @@ function loadGemShop(){
         });
       }
       else{
-        console.log("Streak Freeze is active! : ", streakFreezeActive);
         streakFreeze.innerHTML = "✔️"; 
         streakFreeze.style.backgroundColor = "#a0e45f";
       }
@@ -317,8 +280,6 @@ function loadGemShop(){
 
     }
     else{
-      console.log("Returning to streak info... gems.value: ", gems.value);
-      // Create eventListener for goBack button
       gems.value = "shop";
       gems.innerHTML = "💎 " + gemCount;
       topText.innerHTML = currentDomain;

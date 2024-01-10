@@ -40,15 +40,10 @@ function getDetails(){
   });
 }
 
-function saveDetails(streakDuration = streakLen, maxStk = Math.max(streakLen, maxStreak), prevDay = dateNum, freezeActive = streakFreezeActive, gemNum = 0){
+function saveDetails(streakDuration = streakLen, maxStk = Math.max(streakLen, maxStreak), prevDay = dateNum, freezeActive = streakFreezeActive){
   console.log("Saving details... [streakDuration, maxStk, prevDay, freezeActive]: ", streakDuration, maxStk, prevDay, freezeActive);
-  if(gemCount == 0){
-    streakInfoArray = [streakDuration, maxStk, prevDay, freezeActive];
-    chrome.storage.local.set({[currentDomain]: streakInfoArray});
-  }
-  else{
-    chrome.storage.local.set({'gems': gemCount});
-  }
+  streakInfoArray = [streakDuration, maxStk, prevDay, freezeActive];
+  chrome.storage.local.set({[currentDomain]: streakInfoArray});
 }
 
 // Get light mode's value from storage
@@ -212,12 +207,18 @@ function loadGemShop(){
       console.log("Showing shop..., gems.value: ", gems.value);
       gems.value = "back";
       topText.innerHTML = `💎${gemCount} <br> Gem Shop`;
+      // Convert multiple buttons into a dictionary of {buttonID: [icon, title, cost]} that is iterated through to make buttons
+      
+
       streak.innerHTML = `
       <div class="gemShopItem">
         <img src="images/StreakFreeze.png" width="25%" height="25%"> <p id="gemShopItemTitle">Streak Freeze!</p> <button class="purchaseGemShopItem" id="streakFreeze" type="button"><b>💎20</b></button>
       </div> <br>
       <div class="gemShopItem">
         <img src="images/icon.png"width="25%" height="25%"> <p id="gemShopItemTitle">Buy 10 Gems</p> <button class="purchaseGemShopItem" id="buyGems" type="button"><b>💎0</b></button>
+      </div> <br>
+      <div class="gemShopItem">
+        <img src="images/StreakUp.png"width="25%" height="25%"> <p id="gemShopItemTitle">+3 Streaks!</p> <button class="purchaseGemShopItem" id="streakUp" type="button"><b>💎2</b></button>
       </div>
       `;
       var shopItems = document.getElementsByClassName('gemShopItem');
@@ -239,8 +240,11 @@ function loadGemShop(){
       // Create eventListeners for each purchaseGemShopItem button
       let streakFreeze = document.getElementById('streakFreeze');
       let buyGems = document.getElementById('buyGems');
+      let streakUp = document.getElementById('streakUp');
+
+      // Streak Freeze Listener
       if(streakFreezeActive == null || streakFreezeActive == false){
-        document.getElementById('streakFreeze').addEventListener('click', () => {
+        streakFreeze.addEventListener('click', () => {
           console.log("Streak Freeze is inactive!", streakFreezeActive);
           let cost = 20; // Price of item
 
@@ -269,7 +273,9 @@ function loadGemShop(){
         streakFreeze.innerHTML = "✔️"; 
         streakFreeze.style.backgroundColor = "#a0e45f";
       }
-      document.getElementById('buyGems').addEventListener('click', () => {
+
+      // Buy Gems Listener
+      buyGems.addEventListener('click', () => {
         gemCount += 10;
         chrome.storage.local.set({'gems': gemCount});
         topText.innerHTML = `💎${gemCount} <br> Gem Shop`;
@@ -278,8 +284,37 @@ function loadGemShop(){
         setTimeout(() => {
           buyGems.innerHTML = `💎 0`;
           buyGems.style.backgroundColor = lightMode? `rgb(125, 117, 142)`:`rgb(240, 240, 240)`;
-        }, 1000);
+        }, 500);
       });
+
+      // Streak Up Listener
+      streakUp.addEventListener('click', () => {
+        let cost = 2; // Price of item
+        if(gemCount >= cost){
+          gemCount -= cost;
+          chrome.storage.local.set({'gems': gemCount});
+          streakLen += 3;
+          saveDetails(streakLen, maxStreak, dateNum, false);
+          streakUp.innerHTML = "✔️"; 
+          streakUp.style.backgroundColor = "#a0e45f";
+          topText.innerHTML = `💎${gemCount} <br> Gem Shop`;
+          setTimeout(() => {
+            streakUp.innerHTML = `💎 2`;
+            streakUp.style.backgroundColor = lightMode? `rgb(125, 117, 142)`:`rgb(240, 240, 240)`;
+          }, 1000);
+        }
+        else{
+          streakUp.innerHTML = "❌";
+          topText.innerHTML = `💎${gemCount} <br> Insufficient Gems!`;
+          streakUp.style.backgroundColor = "#e54545";
+          setTimeout(() => {
+            streakUp.innerHTML = `💎 ${cost}`;
+            topText.innerHTML = `💎${gemCount} <br> Gem Shop`;
+            streakUp.style.backgroundColor = lightMode? `rgb(125, 117, 142)`:`rgb(240, 240, 240)`;
+          }, 1000);
+        }
+      });
+
     }
     else{
       console.log("Returning to streak info... gems.value: ", gems.value);

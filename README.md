@@ -9,13 +9,19 @@ A simple Chrome extension that builds and manages streaks on visited websites.
 
 # Key Features
 
-## Streaks
+## 🔥 Streaks
 **Streaks** are counters you can increase with daily activity on websites. 
 For any site, you can choose to start a streak for it by opening the extension and clicking "+ Start a Streak." 
 Come back each day to that website to watch your streak grow!
 
 ## 💎 Gems
-**Gems** are a completely free currency that users can gain by increasing their streaks. Streaks will earn users an extra `+1 💎` for every 10 days the streak has been active
+**Gems** are a completely free currency that users can gain by increasing their streaks. Streaks will earn users an extra `+1 💎` for every 10 days the streak has been active.
+
+## GemShop
+A small storefront where you can trade **Gems** for unique items, such as **Streak Freezes**, which is a one-time-use streak saver that protects you from one day of not keeping your streak.
+<p align="center">
+  <img src="https://github.com/Tinlia/streak-builder/assets/65005430/8bd444fb-f827-40ed-bbab-c0a7202a0362" height="40%">
+</p>
 
 ## Easy-to-use
 Start and stop streaks with just the click of a button. Quick response times and a simple layout converge to create an efficient user experience.
@@ -35,16 +41,19 @@ The extension uses `background.js` to update the extension's badgeText to reflec
 ## Minimal Data Storage and Easy Removal
 - All data is stored using `chrome.storage.local`, and no requests are sent to other servers.
 - On making a streak, the only info stored is the current tab's domain (i.e., `www.github.com`)
-- Without making a streak, no information is stored. The current tab is assigned to a variable when opening the extension and is wiped after closing the extension or switching tabs.
-- With making a streak, only the following info is stored: `{DomainName: [StreakLength, MaxStreak, DayNumberOfLastVisit]}`, and if DarkMode is enabled
-- At any point, the user may delete any and all stored information by clicking the `Clear All` button. This will call `chrome.storage.local.clear()`, wiping everything from storage, ending all streaks, and setting the default view to light mode.
+- Only the following info is ever stored: `{DomainName: [(Int)StreakLength, (Int)MaxStreak, (Int)DayNumberOfLastVisit, (Bool)streakFreezeActive]}`, `(Bool)LightMode`, and `(Int gems)`.
+- At any point, the user may delete any and all stored information by clicking the `Clear All` button. This will call `chrome.storage.local.clear()`, wiping everything from storage, ending all streaks, and setting the default view to light mode. Only gems will persist.
 ```popup.js
-  console.log(deleteAll ? "Removing all entries..." : "Deleting streak by removing ", currentDomain);
-      if(deleteAll) {
-        chrome.storage.local.clear(function() {
-          ...
-        });
-      }
+    if(deleteAll) {
+      chrome.storage.local.clear(function() {
+        var error = chrome.runtime.lastError;
+        if (error) {console.error(error);} 
+        else {
+          chrome.storage.local.set({'gems': gemCount}); // Gems persist through deletion
+          window.close(); // Close popup
+        }
+      });
+    )
 ```
 ## CSP Compliance
 - StreakBuilder uses no inline JS or commands, complying with the [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)

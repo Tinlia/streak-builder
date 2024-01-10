@@ -2,22 +2,23 @@ function updateBadgeText(tab) {
     let url = tab.url;
     let domain = new URL(url).host;
     let today = new Date().getDate();
-    let streakLength = 0, maxStreak = 0, lastVisit = 0;
+    let streakLength = 0, maxStreak = 0, lastVisit = today, streakFreezeActive = false;
+    let streakDetails = [];
 
     // Get the streak details from chrome.storage.local
     chrome.storage.local.get([domain], function(result) {
-        console.log("Result: ", result);
-        if (result[domain] !== undefined) {
-            const streakDetails = result[domain];
-            [streakLength, maxStreak, lastVisit] = streakDetails;
+        if (result[domain] !== undefined && result[domain] !== null) {
+            streakDetails = result[domain];
+            [streakLength, maxStreak, lastVisit, streakFreezeActive] = streakDetails;
             if(today - lastVisit === 1 || (today - lastVisit <= -29 && today == 1)){
                 streakLength++;
-                giveGem(1);
+                giveGem(1 + Math.floor(streakLength/10));
             }else if (today - lastVisit !== 0){ // Lose the streak
-                streakLength = 0;
+                streakLength = streakFreezeActive&&today-lastVisit==2 ? streakLength : 0;
+                streakFreezeActive = false;
             }
-            console.log("Domain found in storage! Domain: ", domain);
-            chrome.storage.local.set({[domain]: [streakLength, Math.max(streakLength, maxStreak), today]}); // LastVisit = yesterday (test)
+            streakDetails = [streakLength, Math.max(streakLength, maxStreak), today, streakFreezeActive];
+            chrome.storage.local.set({[domain]: streakDetails});  
         }else{
             console.log("Domain not found in storage! Domain: ", domain);
         }
@@ -35,11 +36,10 @@ function updateBadgeText(tab) {
 
 // Fetch and set the value of gems
 function giveGem(gemsToAdd){
-    console.log("Giving Gem...");
     chrome.storage.local.get('gems', function(result) {
         chrome.storage.local.set({'gems': result.gems + gemsToAdd});
     });
-  }
+}
 
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
     if (changeInfo.status === 'complete') {

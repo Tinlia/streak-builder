@@ -6,7 +6,7 @@ var lightMode, gemCount = 0;
 
 document.addEventListener('DOMContentLoaded', function() {
   console.log("[Creating event listeners...]");
-  createEventListener();
+  createEventListeners();
   chrome.storage.local.get('gems', function(result) {
     gemCount = result.gems;
     document.getElementById('gems').innerHTML = "💎 " + gemCount;
@@ -98,12 +98,12 @@ function checkStreak(){
     if(streakInfoArray == null || streakInfoArray == undefined){
       showStartStreakButton();
       document.getElementById('gems').style.cursor = "default";
-      createEventListener('newStreak');
+      document.getElementById('newStreak').addEventListener('click', () => createNewStreak());
     }
     else{
       showStreakInfo();
       saveDetails();
-      createEventListener('deleteStreak');
+      document.getElementById('deleteStreak').addEventListener('click', () => showDeleteStreakButtons(false));
     }
   }).catch(error => console.error(error));
 }
@@ -178,7 +178,10 @@ function showDeleteStreakButtons(deleteAll) {
   });
 
   // Cancel Delete Listener
-  createEventListener('deleteStreakCancel');
+  document.getElementById('deleteStreakCancel').addEventListener('click', function() {
+    console.log("Streak Deletion Cancelled!");
+    getTab();
+  });
 }
 
 // Create a new streak
@@ -193,6 +196,7 @@ function createNewStreak(){
 // Load Gem Shop
 function loadGemShop(){
   if(streakInfoArray != undefined){
+    console.log("Loading Gem Shop...");
     var topText = document.getElementById('topText');
     var streak = document.getElementById('streak');
     var gems = document.getElementById('gems');
@@ -207,14 +211,14 @@ function loadGemShop(){
         'streakFreeze': ['images/StreakFreeze.png', 'Streak Freeze!', 'streakFreeze', 20],
         'buyGems': ['images/icon.png', 'Buy 10 Gems', 'buyGems', 0],
         'streakUp': ['images/StreakUp.png', '+3 Streaks!', 'streakUp', 2]
-      }      
-      for(i = 0; i < buttonDict.length; i++){
+      }
+      streak.innerHTML = "";
+      for(let key of Object.keys(buttonDict)){
         streak.innerHTML +=
-        `<div class="gemShopItem">
-          <img src="${buttonDict[i][0]}" width="25%" height="25%"> <p id="gemShopItemTitle">${buttonDict[i][1]}</p> <button class="purchaseGemShopItem" id="${buttonDict[i][2]}" type="button"><b>💎${buttonDict[i][3]}</b></button>
+        `<br><div class="gemShopItem">
+          <img src="${buttonDict[key][0]}" width="25%" height="25%"> <p id="gemShopItemTitle">${buttonDict[key][1]}</p> <button class="purchaseGemShopItem" id="${buttonDict[key][2]}" type="button"><b>💎${buttonDict[key][3]}</b></button>
         </div>`;
       }
-
       var shopItems = document.getElementsByClassName('gemShopItem');
       for (var i = 0; i < shopItems.length; i++) {
         shopItems[i].style.backgroundColor = lightMode? `rgb(95, 87, 112)`:`rgb(227, 227, 227)`;
@@ -238,9 +242,32 @@ function loadGemShop(){
 
       // Streak Freeze Listener
       if(streakFreezeActive == null || streakFreezeActive == false){
-        createEventListener('streakFreeze');
+        streakFreeze.addEventListener('click', () => {
+          console.log("Streak Freeze is inactive!", streakFreezeActive);
+          let cost = 20; // Price of item
+
+          if(gemCount >= cost){
+            gemCount -= cost;
+            chrome.storage.local.set({'gems': gemCount});
+            saveDetails(streakLen, maxStreak, dateNum, true);
+            streakFreeze.innerHTML = "✔️"; 
+            streakFreeze.style.backgroundColor = "#a0e45f";
+            topText.innerHTML = `💎${gemCount} <br> Gem Shop`;
+          }
+          else{
+            streakFreeze.innerHTML = "❌";
+            topText.innerHTML = `💎${gemCount} <br> Insufficient Gems!`;
+            streakFreeze.style.backgroundColor = "#e54545";
+            setTimeout(() => {
+              streakFreeze.innerHTML = `💎 ${cost}`;
+              topText.innerHTML = `💎${gemCount} <br> Gem Shop`;
+              streakFreeze.style.backgroundColor = lightMode? `rgb(125, 117, 142)`:`rgb(240, 240, 240)`;
+            }, 1000);
+          }
+        });
       }
       else{
+        console.log("Streak Freeze is active! : ", streakFreezeActive);
         streakFreeze.innerHTML = "✔️"; 
         streakFreeze.style.backgroundColor = "#a0e45f";
       }
@@ -285,7 +312,6 @@ function loadGemShop(){
           }, 1000);
         }
       });
-
     }
     else{
       console.log("Returning to streak info... gems.value: ", gems.value);
@@ -298,44 +324,11 @@ function loadGemShop(){
   }
 }
 
-// Event Listeners
-function createEventListener(listenersToAdd = 'default'){
-  if(listenersToAdd = 'default'){
-    document.getElementById('bugReport').addEventListener('click', () => window.open('https://github.com/Tinlia/streak-builder/issues/new', '_blank'));
-    document.getElementById('help').addEventListener('click', () => window.open('https://github.com/Tinlia/streak-builder', '_blank'));
-    document.getElementById('clearAll').addEventListener('click', () => showDeleteStreakButtons(true));
-    document.getElementById('lightDarkToggle').addEventListener('click', () => changeColor(false));
-    document.getElementById('gems').addEventListener('click', () => loadGemShop());
-  }
-  else if(listenersToAdd = 'streakFreeze'){ // Streak Freeze Listener
-    let streakFreeze = document.getElementById('streakFreeze');
-    streakFreeze.addEventListener('click', () => {
-      let cost = 20; // Price of item
-      let canPurchase = gemCount >= cost;
-      if (canPurchase) {
-        gemCount -= cost;
-        chrome.storage.local.set({'gems': gemCount});
-        saveDetails(streakLen, maxStreak, dateNum, true);
-        streakFreeze.innerHTML = "✔️"; 
-        streakFreeze.style.backgroundColor = "#a0e45f";
-      } else {
-        streakFreeze.innerHTML = "❌";
-        streakFreeze.style.backgroundColor = "#e54545";
-        setTimeout(() => {
-          streakFreeze.innerHTML = `💎 ${cost}`;
-          streakFreeze.style.backgroundColor = lightMode ? `rgb(125, 117, 142)` : `rgb(240, 240, 240)`;
-        }, 1000);
-      }
-      topText.innerHTML = `💎${gemCount} <br> ${canPurchase ? 'Gem Shop' : 'Insufficient Gems!'}`;
-    });
-  }
-  else if(listenersToAdd = 'newStreak'){ // New Streak Listener
-    document.getElementById('newStreak').addEventListener('click', () => createNewStreak());
-  }
-  else if(listenersToAdd = 'deleteStreak'){ // Delete Streak Listener
-    document.getElementById('deleteStreak').addEventListener('click', () => showDeleteStreakButtons(false));
-  }
-  else if(listenersToAdd = 'deleteStreakCancel'){ // Delete Streak Cancel Listener
-    document.getElementById('deleteStreakCancel').addEventListener('click', () => checkStreak());
-  }
+// On-load Event Listeners
+function createEventListeners(){
+  document.getElementById('bugReport').addEventListener('click', () => window.open('https://github.com/Tinlia/streak-builder/issues/new', '_blank'));
+  document.getElementById('help').addEventListener('click', () => window.open('https://github.com/Tinlia/streak-builder', '_blank'));
+  document.getElementById('clearAll').addEventListener('click', () => showDeleteStreakButtons(true));
+  document.getElementById('lightDarkToggle').addEventListener('click', () => changeColor(false));
+  document.getElementById('gems').addEventListener('click', () => loadGemShop());
 }

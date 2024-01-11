@@ -205,6 +205,8 @@ function loadGemShop(){
       console.log("Showing shop..., gems.value: ", gems.value);
       gems.value = "back";
       topText.innerHTML = `💎${gemCount} <br> Gem Shop`;
+      // Hide buttonbar
+      document.getElementById('buttonBarID').style.display = "none";
 
       // {buttonID: [icon, title, cost]}, Iterated through to make buttons
       let buttonDict = {
@@ -240,16 +242,23 @@ function loadGemShop(){
       let buyGems = document.getElementById('buyGems');
       let streakUp = document.getElementById('streakUp');
 
+      if(streakFreezeActive){
+        streakFreeze.innerHTML = "✔️"; 
+        streakFreeze.style.backgroundColor = "#a0e45f";
+      }
+
       // Streak Freeze Listener
-      if(streakFreezeActive == null || streakFreezeActive == false){
-        streakFreeze.addEventListener('click', () => {
+      streakFreeze.addEventListener('click', () => {
+        if(streakFreezeActive == null || streakFreezeActive == false){
           console.log("Streak Freeze is inactive!", streakFreezeActive);
           let cost = 20; // Price of item
 
           if(gemCount >= cost){
+            console.log("Streak Freeze purcased: ", streakFreezeActive);
             gemCount -= cost;
             chrome.storage.local.set({'gems': gemCount});
-            saveDetails(streakLen, maxStreak, dateNum, true);
+            streakFreezeActive = true;
+            saveDetails();
             streakFreeze.innerHTML = "✔️"; 
             streakFreeze.style.backgroundColor = "#a0e45f";
             topText.innerHTML = `💎${gemCount} <br> Gem Shop`;
@@ -264,13 +273,8 @@ function loadGemShop(){
               streakFreeze.style.backgroundColor = lightMode? `rgb(125, 117, 142)`:`rgb(240, 240, 240)`;
             }, 1000);
           }
-        });
-      }
-      else{
-        console.log("Streak Freeze is active! : ", streakFreezeActive);
-        streakFreeze.innerHTML = "✔️"; 
-        streakFreeze.style.backgroundColor = "#a0e45f";
-      }
+        }
+      });
 
       // Buy Gems Listener
       buyGems.addEventListener('click', () => {
@@ -315,6 +319,7 @@ function loadGemShop(){
     }
     else{
       console.log("Returning to streak info... gems.value: ", gems.value);
+      document.getElementById('buttonBarID').style.display = "block";
       // Create eventListener for goBack button
       gems.value = "shop";
       gems.innerHTML = "💎 " + gemCount;
@@ -323,6 +328,7 @@ function loadGemShop(){
     }
   }
 }
+
 
 // On-load Event Listeners
 function createEventListeners(){

@@ -14,7 +14,7 @@ function updateBadgeText(tab) {
                 streakLength++;
                 giveGem(1 + Math.floor(streakLength/10));
             }else if (today - lastVisit !== 0){ // Lose the streak
-                streakLength = streakFreezeActive&&today-lastVisit==2 ? streakLength : 0;
+                streakLength = streakFreezeActive&&today-lastVisit==2 ? streakLength : 1;
                 streakFreezeActive = false;
             }
             streakDetails = [streakLength, Math.max(streakLength, maxStreak), today, streakFreezeActive];
